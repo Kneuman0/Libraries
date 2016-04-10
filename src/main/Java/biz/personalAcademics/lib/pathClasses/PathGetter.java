@@ -58,7 +58,7 @@ public class PathGetter {
 		String currentJavaJarFilePath = currentJavaJarFile.getAbsolutePath();
 		String currentRootDirectoryPath = currentJavaJarFilePath.replace(
 				currentJavaJarFile.getName(), "");
-		return currentRootDirectoryPath;
+		return currentRootDirectoryPath; 
 	}
 	
 }
