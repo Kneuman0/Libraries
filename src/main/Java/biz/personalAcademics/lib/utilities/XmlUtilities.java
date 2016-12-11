@@ -250,12 +250,12 @@ public class XmlUtilities {
 		
 	}
 	
-	public <Type> void exportPrefs(Type prefs, String exportDirectory){
+	public <Type> void exportPrefs(Type prefs, String exportLocation){
 		FileWriter file = null;
 		PrintWriter fileOut = null;
 		try {
 
-			file = new FileWriter(exportDirectory + "/prefs.xml");
+			file = new FileWriter(exportLocation);
 			fileOut = new PrintWriter(file);
 
 		} catch (IOException e) {
