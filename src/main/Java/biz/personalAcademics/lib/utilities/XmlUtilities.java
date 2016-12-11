@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -54,15 +55,43 @@ public class XmlUtilities {
 	public void setDirectoryPath(String directoryPath) {
 		this.directoryPath = directoryPath;
 	}
+	
+	public <Type> void exportObjectToXML(Type prefs, String exportLocation){
+		FileWriter file = null;
+		PrintWriter fileOut = null;
+		try {
+
+			file = new FileWriter(exportLocation);
+			fileOut = new PrintWriter(file);
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		ByteArrayOutputStream songList = new ByteArrayOutputStream();
+		XMLEncoder write = new XMLEncoder(songList);
+		write.writeObject(prefs);
+		write.close();
+		fileOut.println(songList.toString());
+
+		try {
+			fileOut.close();
+			file.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	/**
-	 * Exports all FileBeans passed in to an XML at the specified
+	 * Exports all Objects passed in to an XML at the specified
 	 * location including name of xml file.
 	 * 
 	 * @param exportLocation
 	 */
-	public <T> void exportSongsToXML(String exportLocation,
-			ObservableList<T> songs) {
+	public <T> void exportListOfObjectsToXML(String exportLocation,
+			List<T> songs) {
 
 		FileWriter file = null;
 		PrintWriter fileOut = null;
@@ -95,49 +124,7 @@ public class XmlUtilities {
 		}
 	}
 
-	/**
-	 * Exports an array of PlaylistBeans containing all the users
-	 * playlist and their associated FileBeans. The XML file will
-	 * be saved in the directory passed in with the name playlists.xml
-	 * 
-	 * <T> type of object being exported
-	 * 
-	 * @param exportLocation
-	 */
-	public <T> void exportPlaylistsToXML(String exportLocation,
-			ObservableList<T> playlists) {
-		
-		FileWriter file = null;
-		PrintWriter fileOut = null;
-		try {
-
-			file = new FileWriter(exportLocation + "/playlists.xml");
-			fileOut = new PrintWriter(file);
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		System.out.println(playlists.toString());
-		// ObservableLists apparently cannot be encoded so it is converted to an
-		// ArrayList
-		ArrayList<T> toXML = new ArrayList<>();
-		toXML.addAll(playlists);
-		ByteArrayOutputStream songList = new ByteArrayOutputStream();
-		XMLEncoder write = new XMLEncoder(songList);
-		write.writeObject(toXML);
-		write.close();
-		fileOut.println(songList.toString());
-
-		try {
-			fileOut.close();
-			file.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	
 	
 	/**
 	 * This method will import an XML file containing playlistBeans.
@@ -150,21 +137,16 @@ public class XmlUtilities {
 	 * @return
 	 * @throws FileNotFoundException
 	 */
-	public static <T> ObservableList<T> importPlaylists(File xml)
+	public static <T> List<T> importListOfObjectFromXML(File xml)
 			throws FileNotFoundException {
-
-		ObservableList<T> tempPlaylists;
 
 		FileInputStream xmlFile = new FileInputStream(xml.getAbsolutePath());
 		BufferedInputStream fileIn = new BufferedInputStream(xmlFile);
 		XMLDecoder decoder = new XMLDecoder(fileIn);
-
-		// ObservableLists apparently cannot be encoded so it is converted from
-		// ArrayList to an ObservableArrayList
+		
 		@SuppressWarnings("unchecked")
 		ArrayList<T> fromXML = (ArrayList<T>) decoder
 				.readObject();
-		tempPlaylists = FXCollections.observableArrayList(fromXML);
 		decoder.close();
 		try {
 			fileIn.close();
@@ -174,54 +156,16 @@ public class XmlUtilities {
 			e.printStackTrace();
 		}
 
-		return tempPlaylists;
+		return fromXML;
 	}
 	
-	/**
-	 * This method will import an XML file containing playlistBeans.
-	 * 
-	 * Should only be used when the XML file location is different
-	 * than the location passed in. The location should be either 
-	 * a relative or absolute path that also contains the name
-	 * of the XML file in the path
-	 * @param xmlLocation
-	 * @return
-	 * @throws FileNotFoundException
-	 */
-	public static <Type> ObservableList<Type> importPlaylists(
-			String xmlLocation) throws FileNotFoundException {
-
-		ObservableList<Type> tempPlaylists;
-
-		FileInputStream xmlFile = new FileInputStream(xmlLocation);
-		BufferedInputStream fileIn = new BufferedInputStream(xmlFile);
-		XMLDecoder decoder = new XMLDecoder(fileIn);
-
-		// ObservableLists apparently cannot be encoded so it is converted from
-		// ArrayList to an OnservableArrayList
-		@SuppressWarnings("unchecked")
-		ArrayList<Type> fromXML = (ArrayList<Type>) decoder
-				.readObject();
-		tempPlaylists = FXCollections.observableArrayList(fromXML);
-		decoder.close();
-		try {
-			fileIn.close();
-			xmlFile.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return tempPlaylists;
-	}
-	
-	public static <Type> Type readInPreferencesBean(String location) throws FileNotFoundException{
+	public static <Type> Type readInObjectFromXML(String location) throws FileNotFoundException{
 		FileInputStream xmlFile = new FileInputStream(location);
-		return readInPreferencesBean(xmlFile);
+		return readInObjectFromXML(xmlFile);
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static <Type> Type readInPreferencesBean(InputStream stream){
+	public static <Type> Type readInObjectFromXML(InputStream stream){
 		
 		Type prefs = null;
 		
@@ -250,33 +194,7 @@ public class XmlUtilities {
 		
 	}
 	
-	public <Type> void exportPrefs(Type prefs, String exportLocation){
-		FileWriter file = null;
-		PrintWriter fileOut = null;
-		try {
-
-			file = new FileWriter(exportLocation);
-			fileOut = new PrintWriter(file);
-
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		ByteArrayOutputStream songList = new ByteArrayOutputStream();
-		XMLEncoder write = new XMLEncoder(songList);
-		write.writeObject(prefs);
-		write.close();
-		fileOut.println(songList.toString());
-
-		try {
-			fileOut.close();
-			file.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+	
 	
 	public static String convertDecimalMinutesToTimeMinutes(double minutes){
 		DecimalFormat time = new DecimalFormat("00");
