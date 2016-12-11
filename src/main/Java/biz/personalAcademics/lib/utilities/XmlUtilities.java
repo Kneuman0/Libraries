@@ -27,36 +27,8 @@ import javafx.collections.ObservableList;
  */
 public class XmlUtilities {
 
-	protected String directoryPath;
-	protected File directory;
-	public int deleteToken = 0;
-
-	public XmlUtilities() {
-		directoryPath = null;
-	}
-
-	public XmlUtilities(String directoryToPlaylistXMLs) {
-		this.directory = new File(directoryToPlaylistXMLs.replace("\\", "/"));
-		this.directoryPath = directoryToPlaylistXMLs;
-
-	}
-
-	/**
-	 * @return the directoryPath
-	 */
-	public String getDirectoryPath() {
-		return directoryPath;
-	}
-
-	/**
-	 * @param directoryPath
-	 *            the directoryPath to set
-	 */
-	public void setDirectoryPath(String directoryPath) {
-		this.directoryPath = directoryPath;
-	}
 	
-	public <Type> void exportObjectToXML(Type prefs, String exportLocation){
+	public static <Type> void exportObjectToXML(Type prefs, String exportLocation){
 		FileWriter file = null;
 		PrintWriter fileOut = null;
 		try {
@@ -90,7 +62,7 @@ public class XmlUtilities {
 	 * 
 	 * @param exportLocation
 	 */
-	public <T> void exportListOfObjectsToXML(String exportLocation,
+	public static <T> void exportListOfObjectsToXML(String exportLocation,
 			List<T> songs) {
 
 		FileWriter file = null;
